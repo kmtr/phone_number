@@ -1,0 +1,7 @@
+[package]
+name = "phone_number"
+version = "0.1.0"
+authors = ["Hiroaki Kamei <kmtr@outlook.com>"]
+
+[dependencies]
+regex = "0.2.1"

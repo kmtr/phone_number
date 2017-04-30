@@ -1,5 +1,4 @@
 extern crate regex;
-use regex::Regex;
 
 #[derive(Debug, PartialEq)]
 pub struct ISO3166 {
@@ -2095,7 +2094,7 @@ pub const ISO3166_ZW: ISO3166 = ISO3166 {
     phone_number_lengths: &[9],
 };
 
-const ISO3166S: &'static [ISO3166] =
+pub const ISO3166S: &'static [ISO3166] =
     &[ISO3166_US, ISO3166_AW, ISO3166_AF, ISO3166_AO, ISO3166_AI, ISO3166_AX, ISO3166_AL,
       ISO3166_AD, ISO3166_AE, ISO3166_AR, ISO3166_AM, ISO3166_AS, ISO3166_AG, ISO3166_AU,
       ISO3166_AT, ISO3166_AZ, ISO3166_BI, ISO3166_BE, ISO3166_BJ, ISO3166_BF, ISO3166_BD,
@@ -2129,70 +2128,3 @@ const ISO3166S: &'static [ISO3166] =
       ISO3166_TZ, ISO3166_UG, ISO3166_UA, ISO3166_UY, ISO3166_UZ, ISO3166_VC, ISO3166_VE,
       ISO3166_VG, ISO3166_VI, ISO3166_VN, ISO3166_VU, ISO3166_WF, ISO3166_WS, ISO3166_YE,
       ISO3166_ZA, ISO3166_ZM, ISO3166_ZW];
-
-pub fn get_iso3166_by_country(country: &str) -> Option<&'static ISO3166> {
-    let country = country.to_uppercase();
-    let l = country.len();
-    match l {
-        2 => {
-            let mut iter = ISO3166S.into_iter().filter(|iso3166| iso3166.alpha2 == country);
-            return iter.next();
-        }
-        3 => {
-            let mut iter = ISO3166S.into_iter().filter(|iso3166| iso3166.alpha3 == country);
-            return iter.next();
-        }
-        l if 4 < l => {
-            let mut iter = ISO3166S.into_iter()
-                .filter(|iso3166| iso3166.country_name.to_uppercase() == country);
-            return iter.next();
-        }
-        _ => return None,
-    }
-}
-
-pub fn get_iso3166_by_number(number: &str) -> Option<&'static ISO3166> {
-    for phone in ISO3166S {
-        let r = Regex::new(("^".to_owned() + phone.country_code).as_str()).unwrap();
-        for l in phone.phone_number_lengths {
-            if r.is_match(number) && number.len() == phone.country_code.len() + l {
-                for mbw in phone.mobile_begin_with {
-                    if Regex::new(("^".to_owned() + phone.country_code + mbw).as_str())
-                        .unwrap()
-                        .is_match(number) {
-                        return Some(phone);
-                    }
-                }
-            }
-        }
-    }
-    return None;
-}
-
-pub fn validate_phone_ISO3166(number: &str, iso3166: &ISO3166) -> bool {
-    if iso3166.phone_number_lengths.len() == 0 {
-        return false;
-    }
-    let number = Regex::new(("^".to_owned() + iso3166.country_code).as_str())
-        .unwrap()
-        .replace_all(number, "");
-    for l in iso3166.phone_number_lengths {
-        if l == &number.len() {
-            for mbw in iso3166.mobile_begin_with {
-                if Regex::new(("^".to_owned() + mbw).as_str()).unwrap().is_match(&number) {
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
-}
-
-#[test]
-fn test_get_iso3166_by_country() {
-    let iso3166 = get_iso3166_by_country("JP");
-    match iso3166 {
-        Some(jp) => assert!(jp == &ISO3166_JP),
-        None => panic!("None"),
-    }
-}

@@ -1,7 +1,13 @@
 [package]
 name = "phone_number"
+description="With a given country and phone number, validate and format the MOBILE phone number to E.164 standard"
+license="MIT"
 version = "0.1.0"
 authors = ["Hiroaki Kamei <kmtr@outlook.com>"]
+include = [
+    "**/*.rs",
+    "Cargo.toml",
+]
 
 [dependencies]
 regex = "0.2.1"

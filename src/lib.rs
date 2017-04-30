@@ -65,17 +65,15 @@ pub fn get_iso3166_by_country(country: &str) -> Option<&'static ISO3166> {
     let l = country.len();
     match l {
         2 => {
-            let mut iter = ISO3166S.into_iter().filter(|iso3166| iso3166.alpha2 == country);
-            return iter.next();
+            return ISO3166S.into_iter().filter(|iso3166| iso3166.alpha2 == country).next();
         }
         3 => {
-            let mut iter = ISO3166S.into_iter().filter(|iso3166| iso3166.alpha3 == country);
-            return iter.next();
+            return ISO3166S.into_iter().filter(|iso3166| iso3166.alpha3 == country).next();
         }
         l if 4 < l => {
-            let mut iter = ISO3166S.into_iter()
-                .filter(|iso3166| iso3166.country_name.to_uppercase() == country);
-            return iter.next();
+            return ISO3166S.into_iter()
+                .filter(|iso3166| iso3166.country_name.to_uppercase() == country)
+                .next();
         }
         _ => return None,
     }

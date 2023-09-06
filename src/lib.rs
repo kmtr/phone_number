@@ -22,7 +22,7 @@ impl error::Error for NotValidPhoneNumberError {
         "It is not a valid phone number"
     }
 
-    fn cause(&self) -> Option<&error::Error> {
+    fn cause(&self) -> Option<&dyn error::Error> {
         None
     }
 }

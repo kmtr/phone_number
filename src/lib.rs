@@ -34,7 +34,7 @@ pub fn parse<'a>(number: &str, country: &str) -> Result<Cow<'a, str>, NotValidPh
 
     // remove any non-digit character, included the +
     let mut number: String = Regex::new(r"\D").unwrap().replace_all(number, "").to_string();
-    let mut iso3166 = try!(get_iso3166_by_country(&country).ok_or(NotValidPhoneNumberError));
+    let mut iso3166 = get_iso3166_by_country(&country).ok_or(NotValidPhoneNumberError)?;
 
     if !vec![ISO3166_GA.alpha3, ISO3166_CI.alpha3, ISO3166_CG.alpha3].contains(&iso3166.alpha3) {
         number = Regex::new(r"^0+").unwrap().replace_all(&number, "").to_string();
@@ -46,7 +46,7 @@ pub fn parse<'a>(number: &str, country: &str) -> Result<Cow<'a, str>, NotValidPh
     }
 
     if has_plus_sign {
-        iso3166 = try!(get_iso3166_by_number(&number).ok_or(NotValidPhoneNumberError));
+        iso3166 = get_iso3166_by_number(&number).ok_or(NotValidPhoneNumberError)?;
     } else {
         if iso3166.phone_number_lengths.contains(&number.len()) {
             number = iso3166.country_code.to_owned() + &number;

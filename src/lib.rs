@@ -1,4 +1,3 @@
-#![feature(str_escape)]
 extern crate regex;
 
 mod iso3166;
@@ -34,16 +33,16 @@ pub fn parse<'a>(number: &str, country: &str) -> Result<Cow<'a, str>, NotValidPh
     let has_plus_sign = number.starts_with("+");
 
     // remove any non-digit character, included the +
-    let mut number: String = Regex::new(r"\D").unwrap().replace_all(number, "").escape_default();
+    let mut number: String = Regex::new(r"\D").unwrap().replace_all(number, "").to_string();
     let mut iso3166 = try!(get_iso3166_by_country(&country).ok_or(NotValidPhoneNumberError));
 
     if !vec![ISO3166_GA.alpha3, ISO3166_CI.alpha3, ISO3166_CG.alpha3].contains(&iso3166.alpha3) {
-        number = Regex::new(r"^0+").unwrap().replace_all(&number, "").escape_default();
+        number = Regex::new(r"^0+").unwrap().replace_all(&number, "").to_string();
     }
 
     if iso3166.alpha3 == ISO3166_RU.alpha3 && number.len() == 11 &&
        Regex::new(r"^89").unwrap().is_match(&number) {
-        number = Regex::new(r"^8+").unwrap().replace_all(&number, "").escape_default();
+        number = Regex::new(r"^8+").unwrap().replace_all(&number, "").to_string()
     }
 
     if has_plus_sign {

@@ -134,12 +134,12 @@ mod tests {
         let iso3166 = parse("090 0000 0000", "jp");
         match iso3166 {
             Ok(jp) => assert_eq!("+819000000000", jp),
-            Err(err) => panic!(err),
+            Err(err) => std::panic::panic_any(err)
         }
         let iso3166 = parse("892 3456 7890", "ru");
         match iso3166 {
             Ok(ru) => assert_eq!("+79234567890", ru),
-            Err(err) => panic!(err),
+            Err(err) => std::panic::panic_any(err)
         }
     }
 }

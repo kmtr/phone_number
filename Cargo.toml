@@ -1,8 +1,10 @@
 [package]
 name = "phone_number"
+edition = "2021"
+
 description="With a given country and phone number, validate and format the MOBILE phone number to E.164 standard"
 license="MIT"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Hiroaki Kamei <kmtr@outlook.com>"]
 include = [
     "**/*.rs",
@@ -10,4 +12,4 @@ include = [
 ]
 
 [dependencies]
-regex = "1.9.5"
+regex = "1.11.0"

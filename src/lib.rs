@@ -64,26 +64,25 @@ pub fn parse(number: &str, country: &str) -> Result<String, NotValidPhoneNumberE
 
 pub fn get_iso3166_by_country(country: &str) -> Option<&'static ISO3166> {
     match country.len() {
-        2 => {
-            ISO3166S
-                .iter().find(|iso3166| iso3166.alpha2 == country.to_uppercase())
-        }
-        3 => {
-            ISO3166S
-                .iter().find(|iso3166| iso3166.alpha3 == country.to_uppercase())
-        }
-        l if 4 < l => {
-            ISO3166S
-                .iter().find(|iso3166| iso3166.country_name.to_uppercase() == country.to_uppercase())
-        }
-        _ => None
+        2 => ISO3166S
+            .iter()
+            .find(|iso3166| iso3166.alpha2 == country.to_uppercase()),
+        3 => ISO3166S
+            .iter()
+            .find(|iso3166| iso3166.alpha3 == country.to_uppercase()),
+        l if 4 < l => ISO3166S
+            .iter()
+            .find(|iso3166| iso3166.country_name.to_uppercase() == country.to_uppercase()),
+        _ => None,
     }
 }
 
 pub fn get_iso3166_by_number(number: &str) -> Option<&'static ISO3166> {
     for phone in ISO3166S {
         for l in phone.phone_number_lengths {
-            if number.starts_with(phone.country_code) && number.len() == phone.country_code.len() + l {
+            if number.starts_with(phone.country_code)
+                && number.len() == phone.country_code.len() + l
+            {
                 for &mbw in phone.mobile_begin_with {
                     if Regex::new(("^".to_owned() + phone.country_code + mbw).as_str())
                         .unwrap()

@@ -40,7 +40,7 @@ pub fn parse(number: &str, country: &str) -> Result<String, NotValidPhoneNumberE
 
     // remove any non-digit character, included the +
     let mut number: String = LAZY_REGEX_D.replace_all(number, "").to_string();
-    let mut iso3166 = get_iso3166_by_country(&country).ok_or(NotValidPhoneNumberError)?;
+    let mut iso3166 = get_iso3166_by_country(country).ok_or(NotValidPhoneNumberError)?;
 
     if ![ISO3166_GA.alpha3, ISO3166_CI.alpha3, ISO3166_CG.alpha3].contains(&iso3166.alpha3) {
         number = LAZY_REGEX_0.replace_all(&number, "").to_string();

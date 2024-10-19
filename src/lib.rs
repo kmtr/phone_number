@@ -34,7 +34,7 @@ impl error::Error for NotValidPhoneNumberError {
     }
 }
 
-pub fn parse<'a>(number: &str, country: &str) -> Result<String, NotValidPhoneNumberError> {
+pub fn parse(number: &str, country: &str) -> Result<String, NotValidPhoneNumberError> {
     let number = number.trim();
     let country = country.trim();
 
@@ -42,7 +42,7 @@ pub fn parse<'a>(number: &str, country: &str) -> Result<String, NotValidPhoneNum
     let mut number: String = LAZY_REGEX_D.replace_all(number, "").to_string();
     let mut iso3166 = get_iso3166_by_country(&country).ok_or(NotValidPhoneNumberError)?;
 
-    if !vec![ISO3166_GA.alpha3, ISO3166_CI.alpha3, ISO3166_CG.alpha3].contains(&iso3166.alpha3) {
+    if ![ISO3166_GA.alpha3, ISO3166_CI.alpha3, ISO3166_CG.alpha3].contains(&iso3166.alpha3) {
         number = LAZY_REGEX_0.replace_all(&number, "").to_string();
     }
 
@@ -53,38 +53,30 @@ pub fn parse<'a>(number: &str, country: &str) -> Result<String, NotValidPhoneNum
 
     if number.starts_with("+") {
         iso3166 = get_iso3166_by_number(&number).ok_or(NotValidPhoneNumberError)?;
-    } else {
-        if iso3166.phone_number_lengths.contains(&number.len()) {
-            number = iso3166.country_code.to_owned() + &number;
-        }
+    } else if iso3166.phone_number_lengths.contains(&number.len()) {
+        number = iso3166.country_code.to_owned() + &number;
     }
     if validate_phone_iso3166(&number, iso3166) {
         return Ok("+".to_owned() + number.as_str());
     }
-    return Err(NotValidPhoneNumberError);
+    Err(NotValidPhoneNumberError)
 }
 
 pub fn get_iso3166_by_country(country: &str) -> Option<&'static ISO3166> {
     match country.len() {
         2 => {
-            return ISO3166S
-                .into_iter()
-                .filter(|iso3166| iso3166.alpha2 == country.to_uppercase())
-                .next();
+            ISO3166S
+                .iter().find(|iso3166| iso3166.alpha2 == country.to_uppercase())
         }
         3 => {
-            return ISO3166S
-                .into_iter()
-                .filter(|iso3166| iso3166.alpha3 == country.to_uppercase())
-                .next();
+            ISO3166S
+                .iter().find(|iso3166| iso3166.alpha3 == country.to_uppercase())
         }
         l if 4 < l => {
-            return ISO3166S
-                .into_iter()
-                .filter(|iso3166| iso3166.country_name.to_uppercase() == country.to_uppercase())
-                .next();
+            ISO3166S
+                .iter().find(|iso3166| iso3166.country_name.to_uppercase() == country.to_uppercase())
         }
-        _ => return None,
+        _ => None
     }
 }
 
@@ -103,11 +95,11 @@ pub fn get_iso3166_by_number(number: &str) -> Option<&'static ISO3166> {
             }
         }
     }
-    return None;
+    None
 }
 
 pub fn validate_phone_iso3166(number: &str, iso3166: &ISO3166) -> bool {
-    if iso3166.phone_number_lengths.len() == 0 {
+    if iso3166.phone_number_lengths.is_empty() {
         return false;
     }
     let number = Regex::new(("^".to_owned() + iso3166.country_code).as_str())
@@ -122,7 +114,7 @@ pub fn validate_phone_iso3166(number: &str, iso3166: &ISO3166) -> bool {
             }
         }
     }
-    return false;
+    false
 }
 
 #[cfg(test)]
